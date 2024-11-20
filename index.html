@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Detective Game</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f5;
+            margin: 0;
+            padding: 0;
+        }
+        #game-container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        #output {
+            margin-top: 20px;
+            height: 300px;
+            overflow-y: auto;
+            background: #e9ecef;
+            padding: 10px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+        }
+        #output p {
+            margin: 10px 0;
+        }
+        #input-container {
+            display: flex;
+            margin-top: 10px;
+        }
+        #input-container input {
+            flex-grow: 1;
+            padding: 10px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+        }
+        #input-container button {
+            padding: 10px 20px;
+            margin-left: 10px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        #input-container button:hover {
+            background: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div id="game-container">
+        <h1>AI Detective Game</h1>
+        <div id="output">
+            <p>Welcome, Detective! Your case begins now.</p>
+        </div>
+        <div id="input-container">
+            <input type="text" id="player-input" placeholder="Type your question or action...">
+            <button id="submit-button">Submit</button>
+        </div>
+    </div>
+
+    <script>
+        const outputElement = document.getElementById("output");
+        const inputElement = document.getElementById("player-input");
+        const buttonElement = document.getElementById("submit-button");
+
+        // Initialize game state
+        const gameState = {
+            caseDetails: "A priceless artifact has been stolen from the museum during a gala event.",
+            suspects: [
+                { name: "Professor Amelia Hart", clue: "Her gloves had traces of dust from the artifact's case.", alibi: "She was in the library." },
+                { name: "Nathan Cross", clue: "He has access to all security cameras, but one camera was turned off.", alibi: "He was monitoring security." },
+                { name: "Lila Devereux", clue: "She argued with the museum curator before the artifact disappeared.", alibi: "She was at the refreshment table." },
+                { name: "Jules Armitage", clue: "A ticket stub to a nearby exhibit was found in their pocket.", alibi: "They were admiring the artwork." }
+            ],
+            cluesDiscovered: [],
+            isSolved: false
+        };
+
+        // Append text to the output
+        function appendOutput(text) {
+            const p = document.createElement("p");
+            p.textContent = text;
+            outputElement.appendChild(p);
+            outputElement.scrollTop = outputElement.scrollHeight; // Auto-scroll to the latest message
+        }
+
+        // Handle player's input
+        function handleInput(input) {
+            input = input.toLowerCase();
+
+            if (input.includes("case details")) {
+                appendOutput(`Case Details: ${gameState.caseDetails}`);
+            } else if (input.includes("list suspects")) {
+                appendOutput("Suspects:");
+                gameState.suspects.forEach(suspect => {
+                    appendOutput(`- ${suspect.name}`);
+                });
+            } else if (input.includes("interrogate")) {
+                const suspectName = input.split("interrogate ")[1];
+                const suspect = gameState.suspects.find(s => s.name.toLowerCase() === suspectName.toLowerCase());
+                if (suspect) {
+                    appendOutput(`You interrogated ${suspect.name}.`);
+                    appendOutput(`Alibi: ${suspect.alibi}`);
+                } else {
+                    appendOutput("Suspect not found. Try another name.");
+                }
+            } else if (input.includes("clue")) {
+                const suspect = gameState.suspects[Math.floor(Math.random() * gameState.suspects.length)];
+                gameState.cluesDiscovered.push(suspect.clue);
+                appendOutput(`Clue discovered: ${suspect.clue}`);
+            } else if (input.includes("solve")) {
+                const culprit = input.split("solve ")[1];
+                if (culprit.toLowerCase() === "professor amelia hart") {
+                    appendOutput("Congratulations! You've solved the case. The thief is Professor Amelia Hart!");
+                    gameState.isSolved = true;
+                } else {
+                    appendOutput("That's not correct. Keep investigating!");
+                }
+            } else {
+                appendOutput("I don't understand that command. Try 'case details', 'list suspects', 'interrogate [name]', 'clue', or 'solve [name]'.");
+            }
+
+            // Clear input
+            inputElement.value = "";
+        }
+
+        // Add event listener for the button
+        buttonElement.addEventListener("click", () => {
+            const input = inputElement.value.trim();
+            if (input) handleInput(input);
+        });
+
+        // Add Enter key listener for input field
+        inputElement.addEventListener("keypress", (e) => {
+            if (e.key === "Enter") {
+                const input = inputElement.value.trim();
+                if (input) handleInput(input);
+            }
+        });
+    </script>
+</body>
+</html>
